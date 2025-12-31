@@ -1,9 +1,29 @@
 import { useEffect, useState } from "react";
+import api from "./api/axios";
 import axios from "axios";
 import "./App.css";
-
+import Login from "./Login";
+import { isTokenValid } from "./utils";
 
 function App() {
+
+  // New product form state
+  const [newProduct, setNewProduct] = useState({
+    product_id: "",
+    product_category: "",
+    product_price: "",
+    product_manufacturing_date: "",
+    product_expiry_date: "",
+  });
+  const [postError, setPostError] = useState(null);
+  const [postSuccess, setPostSuccess] = useState(null);
+
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const token = localStorage.getItem("access_token");
+    return isTokenValid(token);
+  });
+
+
   const [products, setProducts] = useState([]);
   const [nextUrl, setNextUrl] = useState(null);
   const [prevUrl, setPrevUrl] = useState(null);
@@ -12,7 +32,6 @@ function App() {
   const [search, setSearch] = useState("");
   const [ordering, setOrdering] = useState("");
   const [categories, setCategories] = useState([]);
-
 
   const fetchProducts = async (url = "http://127.0.0.1:8001/api/products/") => {
     if (!url) return; // skip if URL is null (like prevUrl on first page)
@@ -52,6 +71,29 @@ function App() {
 
     fetchProducts(url);
   };
+
+  const handleAddProduct = async (e) => {
+      e.preventDefault();
+      setPostError(null);
+      setPostSuccess(null);
+
+      try {
+        const response = await api.post("products/", newProduct);
+        console.log("Product created:", response.data);
+        setPostSuccess("Product added successfully!");
+        setNewProduct({
+          product_id: "",
+          product_category: "",
+          product_price: "",
+          product_manufacturing_date: "",
+          product_expiry_date: "",
+        });
+        fetchProducts(); // refresh table
+      } catch (err) {
+        console.error(err);
+        setPostError("Failed to add product. Make sure you are logged in.");
+      }
+    };
 
   useEffect(() => {
     fetchCategories();
@@ -119,6 +161,64 @@ function App() {
           Next
         </button>
       </div>
+      <h2>Add New Product</h2>
+          {!isAuthenticated ? (
+            <Login onLoginSuccess={() => setIsAuthenticated(true)} />
+          ) : (
+            <form onSubmit={handleAddProduct}>
+
+                <input
+                  type="text"
+                  placeholder="Product ID"
+                  value={newProduct.product_id}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, product_id: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Category"
+                  value={newProduct.product_category}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, product_category: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Price"
+                  value={newProduct.product_price}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, product_price: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  type="date"
+                  placeholder="Manufacturing Date"
+                  value={newProduct.product_manufacturing_date}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, product_manufacturing_date: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  type="date"
+                  placeholder="Expiry Date"
+                  value={newProduct.product_expiry_date}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, product_expiry_date: e.target.value })
+                  }
+                  required
+                />
+                <button type="submit">Add Product</button>
+              </form>
+          )}
+        
+
+        {postError && <p style={{ color: "red" }}>{postError}</p>}
+        {postSuccess && <p style={{ color: "green" }}>{postSuccess}</p>}
 
     </div>
   );
