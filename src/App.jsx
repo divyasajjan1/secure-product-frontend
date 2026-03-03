@@ -32,6 +32,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [ordering, setOrdering] = useState("");
   const [categories, setCategories] = useState([]);
+  const [showSensitiveId, setShowSensitiveId] = useState(null);
 
   const fetchProducts = async (url = "http://127.0.0.1:8001/api/products/") => {
     if (!url) return; // skip if URL is null (like prevUrl on first page)
@@ -40,7 +41,7 @@ function App() {
     setError(null);
 
     try {
-      const response = await axios.get(url);
+      const response = await api.get(url);
       setProducts(response.data.results);
       setNextUrl(response.data.next);
       setPrevUrl(response.data.previous);
@@ -87,6 +88,8 @@ function App() {
           product_price: "",
           product_manufacturing_date: "",
           product_expiry_date: "",
+          supplier_cost: "",
+          internal_notes: "",
         });
         fetchProducts(); // refresh table
       } catch (err) {
@@ -94,11 +97,19 @@ function App() {
         setPostError("Failed to add product. Make sure you are logged in.");
       }
     };
+   
+  const toggleSensitiveInfo = (productId) => {
+    if (showSensitiveId === productId) {
+      setShowSensitiveId(null); // Hide if already showing
+    } else {
+      setShowSensitiveId(productId); // Show for this specific row
+    }
+  };  
 
   useEffect(() => {
     fetchCategories();
     fetchProducts(); 
-  }, []);
+  }, [isAuthenticated]);
 
 
   if (loading) return <p>Loading products...</p>;
@@ -137,6 +148,8 @@ function App() {
             <th>Price ($)</th>
             <th>Manufacturing Date</th>
             <th>Expiry Date</th>
+            <th>Supplier Cost</th> 
+            <th>Internal Notes</th>
           </tr>
         </thead>
         <tbody>
@@ -147,6 +160,24 @@ function App() {
               <td>${product.product_price}</td>
               <td>{product.product_manufacturing_date}</td>
               <td>{product.product_expiry_date}</td>
+              {/* Sensitive Field: Supplier Cost */}
+              <td>
+                {showSensitiveId === product.product_id ? product.supplier_cost_encrypted : "********"}
+              </td>
+              {/* Sensitive Field: Internal Notes */}
+              <td>
+                {showSensitiveId === product.product_id ? product.internal_notes_encrypted : "Restricted"}
+                
+                {/* Show the toggle button ONLY if the user is authenticated */}
+                {isAuthenticated && (
+                  <button 
+                    onClick={() => toggleSensitiveInfo(product.product_id)}
+                    style={{ marginLeft: '10px', fontSize: '10px' }}
+                  >
+                    {showSensitiveId === product.product_id ? "Hide" : "Decrypt"}
+                  </button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -211,6 +242,18 @@ function App() {
                     setNewProduct({ ...newProduct, product_expiry_date: e.target.value })
                   }
                   required
+                />
+                <input
+                  type="number"
+                  placeholder="Supplier Cost (Sensitive)"
+                  value={newProduct.supplier_cost}
+                  onChange={(e) => setNewProduct({ ...newProduct, supplier_cost: e.target.value })}
+                />
+                <input
+                  type="text"
+                  placeholder="Internal Notes (Sensitive)"
+                  value={newProduct.internal_notes}
+                  onChange={(e) => setNewProduct({ ...newProduct, internal_notes: e.target.value })}
                 />
                 <button type="submit">Add Product</button>
               </form>
