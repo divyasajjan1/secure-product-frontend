@@ -6,18 +6,14 @@ This is the **React frontend** for the Secure Product Management system. It conn
 
 ---
 
-## Features
+## 🔐 Key Features
 
-- **Product List Table**: View all products with details such as ID, category, price, manufacturing date, and expiry date.
-- **Filtering & Sorting**:  
-  - Search by product ID or category.  
-  - Sort by price or expiry/manufacturing dates (ascending/descending).
-- **Pagination**: Navigate between product pages using Previous/Next buttons.
-- **JWT Authentication**: Login required to add new products.
-- **Add New Product**:  
-  - Form to create new products with all necessary fields.  
-  - Shows success or error messages after submission.
-- **Responsive Styling**: Clean and consistent layout for inputs, buttons, tables, and forms.
+- **Product List Table**: View core product details (ID, Category, Price, Dates).
+- **Dynamic Data Masking**: Sensitive fields (`Supplier Cost` and `Internal Notes`) are masked with `********` or `Restricted` by default to ensure data privacy.
+- **On-Demand Decryption**: Authenticated Admins can click a **Decrypt** button to reveal the true values of sensitive fields.
+- **Role-Based UI**: The "Add Product" form and "Decrypt" buttons only appear for authenticated users.
+- **Filtering & Sorting**: Search by category and sort by price or manufacturing/expiry dates.
+- **Pagination**: Server-side pagination for optimized data loading.
 
 ---
 
@@ -59,18 +55,19 @@ src/
     > Login form stores access_token and refresh_token in localStorage.
     > Axios request interceptor automatically attaches Authorization: Bearer <token> header for protected endpoints.
 
-## Usage
+## 🔍 Usage
 
-1. Open the dashboard in your browser.
-2. Login using admin credentials (JWT token will be stored automatically).
-3. View products with filtering, sorting, and pagination.
-4. Add a new product using the form (visible only when logged in). Successful submission refreshes the product list automatically.
+1. **Dashboard Access**: Open the dashboard to view the product list. Sensitive data is masked for all users initially.
+2. **Admin Authentication**: Login using staff credentials. The JWT token is stored securely in `localStorage`.
+3. **View Sensitive Info**: As an Admin, click the **Decrypt** button on any table row. This sends an authorized request to the backend to retrieve the decrypted value.
+4. **Data Management**: Use the "Add New Product" form to enter data. The backend will automatically encrypt the `Supplier Cost` and `Internal Notes` before storing them.
 
 ## Notes
 
 - This frontend works with the Django backend supporting JWT authentication.
 - All API calls use the api Axios instance with token management handled automatically.
 - Styling is designed to match the product table and form layout.
+- - **Defense in Depth**: Even if the "Decrypt" button is triggered, the backend Serializer performs a final check on the JWT. If the user is not a staff member, the server will refuse to send the decrypted data.
 
 ### Dependencies
 
