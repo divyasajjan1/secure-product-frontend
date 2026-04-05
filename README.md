@@ -14,6 +14,7 @@ This is the **React frontend** for the Secure Product Management system. It conn
 - **Role-Based UI**: The "Add Product" form and "Decrypt" buttons only appear for authenticated users.
 - **Filtering & Sorting**: Search by category and sort by price or manufacturing/expiry dates.
 - **Pagination**: Server-side pagination for optimized data loading.
+- **AI Insights Assistant**: A natural language interface powered by **LangChain** and **Gemini**. Users can ask complex questions about product data (e.g., "What is the average price in the Electronics category?") and receive instant calculated answers.
 
 ---
 
@@ -61,6 +62,15 @@ src/
 2. **Admin Authentication**: Login using staff credentials. The JWT token is stored securely in `localStorage`.
 3. **View Sensitive Info**: As an Admin, click the **Decrypt** button on any table row. This sends an authorized request to the backend to retrieve the decrypted value.
 4. **Data Management**: Use the "Add New Product" form to enter data. The backend will automatically encrypt the `Supplier Cost` and `Internal Notes` before storing them.
+5. **Interactive Analytics**: Use the **Product Insights Assistant** box below the table. Type a question about your inventory or pricing and click **Ask AI**. The system will process the request through a LangChain-orchestrated pipeline and display the result.
+
+## 🤖 AI Analytics (Natural Language)
+
+The dashboard includes a dedicated **AI Assistant** component that bridges the gap between raw data and business insights.
+
+- **Dynamic Querying**: Instead of manual filtering, users can perform complex aggregations and comparisons via text.
+- **Stateful UI**: Features integrated loading states ("Thinking...") and a distinct, styled response area to separate AI insights from standard table data.
+- **Secure Communication**: All AI queries are routed through a protected Django endpoint, ensuring the LLM only interacts with permitted, non-sensitive database fields.
 
 ## Notes
 
