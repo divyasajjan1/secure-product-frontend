@@ -161,3 +161,98 @@ form p.error {
   max-width: 400px;
   margin: 40px auto;
 }
+
+/* AI Assistant Section Styling */
+.ai-assistant-section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  margin: 30px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.ai-assistant-section h3 {
+  margin-top: 0;
+  color: #1f2937;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-assistant-section p {
+  color: #6b7280;
+  font-size: 13px;
+  margin-bottom: 15px;
+}
+
+.ai-input-group {
+  display: flex !important; /* Forces horizontal layout */
+  flex-direction: row !important; 
+  gap: 10px;
+  width: 100%;
+  background: transparent !important; /* Removes the white box background from generic form style */
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.ai-input-group input {
+  flex: 1 !important;
+  margin-bottom: 0 !important;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+}
+
+.ai-input-group input:focus {
+  border-color: #8b5cf6; /* Purple focus */
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.ai-input-group button {
+  width: auto !important; /* Prevents the button from taking full width */
+  white-space: nowrap;
+}
+
+.ai-assistant-section button {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #8b5cf6; /* Purple for AI branding */
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ai-assistant-section button:hover:not(:disabled) {
+  background-color: #7c3aed;
+}
+
+.ai-assistant-section button:disabled {
+  background-color: #c4b5fd;
+  cursor: not-allowed;
+}
+
+.ai-response {
+  margin-top: 15px;
+  padding: 12px 15px;
+  background-color: #f5f3ff; /* Very light purple */
+  border-left: 4px solid #8b5cf6;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #4c1d95;
+  line-height: 1.5;
+}
+
+.ai-response strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #5b21b6;
+}

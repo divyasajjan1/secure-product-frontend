@@ -33,6 +33,9 @@ function App() {
   const [ordering, setOrdering] = useState("");
   const [categories, setCategories] = useState([]);
   const [showSensitiveId, setShowSensitiveId] = useState(null);
+  const [dbQuestion, setDbQuestion] = useState("");
+  const [dbAnswer, setDbAnswer] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
 
   const fetchProducts = async (url = "http://127.0.0.1:8001/api/products/") => {
     if (!url) return; // skip if URL is null (like prevUrl on first page)
@@ -105,6 +108,25 @@ function App() {
       setShowSensitiveId(productId); // Show for this specific row
     }
   };  
+
+  const handleAskAI = async (e) => {
+    e.preventDefault();
+    if (!dbQuestion.trim()) return;
+
+    setAiLoading(true);
+    setDbAnswer(""); // Clear previous answer
+
+    try {
+      // Replace with your actual endpoint from views.py
+      const response = await api.post("ask-db/", { question: dbQuestion });
+      setDbAnswer(response.data.answer);
+    } catch (err) {
+      console.error(err);
+      setDbAnswer("Sorry, I couldn't process that query. Please try again.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchCategories();
@@ -192,6 +214,35 @@ function App() {
           Next
         </button>
       </div>
+
+      <div className="ai-assistant-section">
+        <h3>✨ Product Insights Assistant</h3>
+        <p>Ask natural language questions about categories, pricing, or dates.</p>
+        
+        <div className="ai-input-group">
+          <input
+            type="text"
+            placeholder="e.g., What is the total value of Electronics?"
+            value={dbQuestion}
+            onChange={(e) => setDbQuestion(e.target.value)}
+          />
+          <button 
+            type="button" 
+            onClick={handleAskAI} 
+            disabled={aiLoading}
+          >
+            {aiLoading ? "Thinking..." : "Ask AI"}
+          </button>
+        </div>
+
+        {dbAnswer && (
+          <div className="ai-response">
+            <strong>AI Insights:</strong>
+            {dbAnswer}
+          </div>
+        )}
+      </div>
+
       <h2>Add New Product</h2>
           {!isAuthenticated ? (
             <Login onLoginSuccess={() => setIsAuthenticated(true)} />
